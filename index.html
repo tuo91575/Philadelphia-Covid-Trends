@@ -37,6 +37,7 @@
 <script>
 "use strict";
 $("#secretcheck").hide();
+// Defining Variables
 let datadate = "";
 let datax = "";
 let datay = "";
@@ -46,13 +47,15 @@ let dataz = "";
 let datacases = "";
 let confirmation = "";
 let chartapicall = "";
-let year2020days = 366
-let year2021days = 365
-let year2022days = 365
-let year2023days = 365
-let year2024days = 366
+let hospitalizations = ""
+let currentmonthcheck = ""
+let currentyearcheck = ""
+let currentmonthcasecount = 0
+let defusedcount = ""
+let defusing = ""
 
 function variablesanatize(){
+    //Clearing all variables to ensure they are clean and don't leak data from previous checks
     datadate = "";
     datax = "";
     datay = "";
@@ -62,14 +65,25 @@ function variablesanatize(){
     datacases = "";
     confirmation = "";
     chartapicall = "";
+    hospitalizations = "";
+    currentmonthcheck = ""
+    currentyearcheck = ""
+    currentmonthcasecount = 0
+    defusedcount = ""
+    defusing = ""
 }
 
 function CSVDataLoader(){
-
+// Load Covid Deaths
 $.get("https://phl.carto.com/api/v2/sql?filename=covid_deaths_by_date&format=csv&skipfields=cartodb_id,the_geom,the_geom_webmercator&q=SELECT%20*%20FROM%20covid_deaths_by_date",function(result){
 
     result = result.split("\r\n");
     dataz = result.sort()
+});
+$.get("https://phl.carto.com/api/v2/sql?filename=covid_deaths_by_date&format=csv&skipfields=cartodb_id,the_geom,the_geom_webmercator&q=SELECT%20*%20FROM%20covid_deaths_by_date",function(result){
+
+    result = result.split("\r\n");
+    hospitalizations = result.sort()
 });
 }
 
@@ -137,26 +151,6 @@ chartapicall = "https://image-charts.com/chart.js/2.8.0?bkg=white&c=%7B%0A%20%20
 $("#datainsert").html("<img src='" + chartapicall + "'>"); 
 }
 
-function daysofweekcounted(){
-    for(let i=2; i < dataz.length - 1; i++){
-datadate = datadate + dataz[i][0] + dataz[i][1] + dataz[i][2] + dataz[i][3] + dataz[i][4] + dataz[i][5] + dataz[i][6] + dataz[i][7] + dataz[i][8] + dataz[i][9] + "|"
-
-}
-}
-
-function ChartingTheWeeklyData(){
-    if (dataz != ""){
-    secretcheck = "Confirmed" 
-}
-
-if (secretcheck != "Confirmed"){
-        setTimeout(function(){
-            ChartingTheWeeklyData()
-}, 2000);
-    } else
-console.log("Weekly")
-}
-
 function ChartingTheMonthlyData(){
     if (dataz != ""){
     secretcheck = "Confirmed" 
@@ -167,12 +161,6 @@ if (secretcheck != "Confirmed"){
             ChartingTheMonthlyData()
 }, 2000);
     } else
-console.log("Monthly")
-let currentmonthcheck = ""
-let currentyearcheck = ""
-let currentmonthcasecount = 0
-let defusedcount = ""
-let defusing = ""
 
 for(let i=2; i < dataz.length - 1; i++){
     
@@ -241,13 +229,6 @@ $('#btn_load_chart').click(function(){
     $("#datainsert").html("")
     CSVDataLoader()
     ChartingTheData()
-})
-
-$('#btn_load_Weekly_chart').click(function(){
-    variablesanatize()
-    $("#datainsert").html("")
-    CSVDataLoader()
-    ChartingTheWeeklyData()
 })
 
 $('#btn_load_Monthly_chart').click(function(){
