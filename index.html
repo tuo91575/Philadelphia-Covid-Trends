@@ -19,9 +19,9 @@
                 <p>Here we are able to see a change in the spread of covid over a period of time over the Philidelphia area. Your able to see if there are spikes in covid and what meassures are best to prevent risk of catching covid. If covid is very common in the area your better off wearing a mask while if its uncommon you might prefer better comfort.</p>
                 <br>
                 <p>*Note data begins March 30th 2020</p>
-				<input type="button" id="btn_load_data" value="Load Data" class="btn btn-primary">
+				<input type="button" id="btn_load_data" value="Load Death Data" class="btn btn-primary">
 				<br><br>
-                <input type="button" id="btn_load_chart" value="Load Daily Chart" class="btn btn-primary">
+                <input type="button" id="btn_load_positive_data" value="Load Positive Covid Test Data" class="btn btn-primary">
 				<br><br>
                 <input type="button" id="btn_load_Monthly_chart" value="Load Monthly Chart" class="btn btn-primary">
 				<br><br>
@@ -47,12 +47,15 @@ let dataz = "";
 let datacases = "";
 let confirmation = "";
 let chartapicall = "";
-let hospitalizations = ""
+let positives = ""
 let currentmonthcheck = ""
 let currentyearcheck = ""
 let currentmonthcasecount = 0
 let defusedcount = ""
 let defusing = ""
+let datearray = []
+let positivecount = 0
+let positivecountarray = []
 
 function variablesanatize(){
     //Clearing all variables to ensure they are clean and don't leak data from previous checks
@@ -65,12 +68,15 @@ function variablesanatize(){
     datacases = "";
     confirmation = "";
     chartapicall = "";
-    hospitalizations = "";
+    positives = "";
     currentmonthcheck = ""
     currentyearcheck = ""
     currentmonthcasecount = 0
     defusedcount = ""
     defusing = ""
+    datearray = []
+    positivecount = 0
+    positivecountarray = []
 }
 
 function CSVDataLoader(){
@@ -80,10 +86,10 @@ $.get("https://phl.carto.com/api/v2/sql?filename=covid_deaths_by_date&format=csv
     result = result.split("\r\n");
     dataz = result.sort()
 });
-$.get("https://phl.carto.com/api/v2/sql?filename=covid_deaths_by_date&format=csv&skipfields=cartodb_id,the_geom,the_geom_webmercator&q=SELECT%20*%20FROM%20covid_deaths_by_date",function(result){
+$.get("https://phl.carto.com/api/v2/sql?filename=covid_hospitalizations_by_date&format=csv&skipfields=cartodb_id,the_geom,the_geom_webmercator&q=SELECT%20*%20FROM%20covid_hospitalizations_by_date",function(result){
 
     result = result.split("\r\n");
-    hospitalizations = result.sort()
+    positives = result.sort()
 });
 }
 
@@ -111,44 +117,40 @@ datay = datay + ("Date : " + datadate + " Number of deaths: " + datax + "<br>")
 
 }
 
-function ChartingTheData(){
-    if (confirmation == ""){
-        confirmation = window.confirm("Warning this option charts every single day and may be slow to load and hard to read, It's recommended you select a different option(Such as weekly or monthly). Press Ok to continue.")
-    } 
-
-    if (confirmation == false){
-return
-}
-    if (dataz != ""){
+function LoadPositiveData(){
+if (dataz != ""){
     secretcheck = "Confirmed" 
 }
 
-
 if (secretcheck != "Confirmed"){
         setTimeout(function(){
-            ChartingTheData()
+            LoadPositiveData()
 }, 2000);
-return
-    }
+    } else
 
-for(let i=2; i < dataz.length - 1; i++){
-    if (datadate == ""){
-        datadate = dataz[i][0] + dataz[i][1] + dataz[i][2] + dataz[i][3] + dataz[i][4] + dataz[i][5] + dataz[i][6] + dataz[i][7] + dataz[i][8] + dataz[i][9]
-    } else {
-        datadate = datadate + "%22%2C%22" + dataz[i][0] + dataz[i][1] + dataz[i][2] + dataz[i][3] + dataz[i][4] + dataz[i][5] + dataz[i][6] + dataz[i][7] + dataz[i][8] + dataz[i][9]
-
-    }
-datax = dataz[i][16]
-if (dataz[i][17] != ","){
-        datax = datax + dataz[i][17]
-       }
-       if(datacases == ""){
-        datacases = datax
-       }else{datacases = datacases + "%2C" + datax}
-
+    for(let i=3; i < positives.length - 1; i++){
+if(positives[i][11] == "Y"){
+datadate = positives[i][0] + positives[i][1] + positives[i][2] + positives[i][3] + positives[i][4] + positives[i][5] + positives[i][6] + positives[i][7] + positives[i][8] + positives[i][9]
+if (datadate != datearray[datearray.length - 1]){
+    positivecountarray.push(positivecount)
+    datearray.push(datadate)
+positivecount = 0
+positivecount++
+} else {
+    positivecount++
 }
-chartapicall = "https://image-charts.com/chart.js/2.8.0?bkg=white&c=%7B%0A%20%20type%3A%20%27line%27%2C%0A%20%20data%3A%20%7B%0A%20%20%20%20labels%3A%20%5B%22" + datadate  + "%22%5D%2C%0A%20%20%20%20datasets%3A%20%5B%0A%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20label%3A%20%27Covid%20Cases%27%2C%0A%20%20%20%20%20%20%20%20backgroundColor%3A%20%27rgb%28255%2C%2099%2C%20132%29%27%2C%0A%20%20%20%20%20%20%20%20borderColor%3A%20%27rgb%28255%2C%2099%2C%20132%29%27%2C%0A%20%20%20%20%20%20%20%20data%3A%20%5B"+ datacases + "%5D%2C%0A%20%20%20%20%20%20%20%20fill%3A%20false%2C%0A%20%20%20%20%20%20%7D%2C%0A%20%20%20%20%5D%2C%0A%20%20%7D%2C%0A%20%20options%3A%20%7B%0A%20%20%20%20title%3A%20%7B%0A%20%20%20%20%20%20display%3A%20true%2C%0A%20%20%20%20%20%20text%3A%20%27Covid%20Cases%20in%20Philadelphia%27%2C%0A%20%20%20%20%7D%2C%0A%20%20%7D%2C%0A%7D%0A"
-$("#datainsert").html("<img src='" + chartapicall + "'>"); 
+}
+datadate = ""
+
+    }
+
+    for(let i=3; i < datearray.length - 1; i++){
+datadate = datearray[i][0] + datearray[i][1] + datearray[i][2] + datearray[i][3] + datearray[i][4] + datearray[i][5] + datearray[i][6] + datearray[i][7] + datearray[i][8] + datearray[i][9]
+datax = positivecountarray[i]
+datay = datay + ("Date : " + datadate + " Number of positives: " + datax + "<br>")
+    }
+    $("#datainsert").html(datay)
+
 }
 
 function ChartingTheMonthlyData(){
@@ -208,9 +210,11 @@ if (i == dataz.length - 2){
     defusing = defusing + "%22%2C%22" + currentmonthcheck + "-20" + currentyearcheck
     defusedcount = defusedcount + "%2C" + currentmonthcasecount
 }
+
+
 }
 
-chartapicall = "https://image-charts.com/chart.js/2.8.0?bkg=white&c=%7B%0A%20%20type%3A%20%27line%27%2C%0A%20%20data%3A%20%7B%0A%20%20%20%20labels%3A%20%5B%22" + defusing  + "%22%5D%2C%0A%20%20%20%20datasets%3A%20%5B%0A%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20label%3A%20%27Covid%20Cases%27%2C%0A%20%20%20%20%20%20%20%20backgroundColor%3A%20%27rgb%28255%2C%2099%2C%20132%29%27%2C%0A%20%20%20%20%20%20%20%20borderColor%3A%20%27rgb%28255%2C%2099%2C%20132%29%27%2C%0A%20%20%20%20%20%20%20%20data%3A%20%5B"+ defusedcount + "%5D%2C%0A%20%20%20%20%20%20%20%20fill%3A%20false%2C%0A%20%20%20%20%20%20%7D%2C%0A%20%20%20%20%5D%2C%0A%20%20%7D%2C%0A%20%20options%3A%20%7B%0A%20%20%20%20title%3A%20%7B%0A%20%20%20%20%20%20display%3A%20true%2C%0A%20%20%20%20%20%20text%3A%20%27Covid%20Cases%20in%20Philadelphia%27%2C%0A%20%20%20%20%7D%2C%0A%20%20%7D%2C%0A%7D%0A"
+chartapicall = "https://image-charts.com/chart.js/2.8.0?bkg=white&c=%7B%0A%20%20type%3A%20%27line%27%2C%0A%20%20data%3A%20%7B%0A%20%20%20%20labels%3A%20%5B%27"  + defusing  +  "%27%5D%2C%0A%20%20%20%20datasets%3A%20%5B%0A%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20label%3A%20%27My%20First%20dataset%27%2C%0A%20%20%20%20%20%20%20%20backgroundColor%3A%20%27rgb(255%2C%2099%2C%20132)%27%2C%0A%20%20%20%20%20%20%20%20borderColor%3A%20%27rgb(255%2C%2099%2C%20132)%27%2C%0A%20%20%20%20%20%20%20%20data%3A%20%5B" + defusedcount +  "%5D%2C%0A%20%20%20%20%20%20%20%20fill%3A%20false%2C%0A%20%20%20%20%20%20%7D%2C%0A%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20label%3A%20%27My%20Second%20dataset%27%2C%0A%20%20%20%20%20%20%20%20fill%3A%20false%2C%0A%20%20%20%20%20%20%20%20backgroundColor%3A%20%27rgb(54%2C%20162%2C%20235)%27%2C%0A%20%20%20%20%20%20%20%20borderColor%3A%20%27rgb(54%2C%20162%2C%20235)%27%2C%0A%20%20%20%20%20%20%20%20data%3A%20%5B20%2C%2085%2C%20-79%2C%2093%2C%2027%2C%20-81%2C%20-22%5D%2C%0A%20%20%20%20%20%20%7D%2C%0A%20%20%20%20%5D%2C%0A%20%20%7D%2C%0A%20%20options%3A%20%7B%0A%20%20%20%20title%3A%20%7B%0A%20%20%20%20%20%20display%3A%20true%2C%0A%20%20%20%20%20%20text%3A%20%27Chart.js%20Line%20Chart%27%2C%0A%20%20%20%20%7D%2C%0A%20%20%7D%2C%0A%7D%0A"
 $("#datainsert").html("<img src='" + chartapicall + "'>"); 
 
 }
@@ -224,11 +228,12 @@ $('#btn_load_data').click(function(){
 
 })
 
-$('#btn_load_chart').click(function(){
+$('#btn_load_positive_data').click(function(){
     variablesanatize()
     $("#datainsert").html("")
     CSVDataLoader()
-    ChartingTheData()
+    LoadPositiveData()
+
 })
 
 $('#btn_load_Monthly_chart').click(function(){
