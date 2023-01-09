@@ -19,7 +19,6 @@
                 <p>Here we are able to see a change in the spread of covid over a period of time over the Philidelphia area. Your able to see if there are spikes in covid and what meassures are best to prevent risk of catching covid. If covid is very common in the area your better off wearing a mask while if its uncommon you might prefer better comfort.</p>
                 <br>
                 <p>*Note data begins March 5th 2020</p>
-                <br>
                 <p>**Data is updated once a week every monday</p>
                 <input type="button" id="btn_load_test_data" value="Load Covid Test Data" class="btn btn-primary">
 				<br><br>
@@ -46,6 +45,18 @@ let nextdate = ""
 let publishdata = ""
 let negatives = 0
 let positives = 0
+let chartapicall = ""
+let months1 = ""
+let monthlypositive1 = ""
+let monthlynegative1 = ""
+let monthlytotal1 = ""
+let chartapi2 = ""
+let chartapi3 = ""
+let months2 = ""
+let monthlypositive2 = ""
+let months3 = ""
+let monthlypositive3 = ""
+let monthlynegative3 = ""
 
 function variablesanatize(){
     //Clearing all variables to ensure they are clean and don't leak data from previous checks
@@ -57,6 +68,18 @@ function variablesanatize(){
     publishdata = "";
     negatives = 0
     positives = 0
+    chartapicall = ""
+    months1 = ""
+    monthlypositive1 = ""
+    monthlynegative1 = ""
+    monthlytotal1 = ""
+    chartapi2 = ""
+    chartapi3 = ""
+    months2 = ""
+    monthlypositive2 = ""
+    months3 = ""
+    monthlypositive3 = ""
+    monthlynegative3 = ""
 }
 
 function CSVDataLoader(){
@@ -146,72 +169,137 @@ $("#datainsert").html(publishdata)
     }}
 
 
-//function ChartingTheMonthlyData(){
-//    if (dataz != ""){
-//    secretcheck = "Confirmed" 
-//}
-//
-//if (secretcheck != "Confirmed"){
-//        setTimeout(function(){
-//            ChartingTheMonthlyData()
-//}, 2000);
-//    } else
+function NewMonthlyChart(){
+if (tests != ""){
+    secretcheck = "Confirmed" 
+}
 
-//for(let i=2; i < dataz.length - 1; i++){
-    
-////datadate = dataz[i][0] + dataz[i][1] + dataz[i][2] + dataz[i][3] + dataz[i][4] + dataz[i][5] + dataz[i][6] + dataz[i][7] + dataz[i][8] + dataz[i][9]
-//if ((dataz[i][5] + dataz[i][6]) == currentmonthcheck){
-//        datax = dataz[i][16]
-//if (dataz[i][17] != ","){
-//        datax = datax + dataz[i][17]
-//       }
-//       datay = parseFloat(datax)
-//       currentmonthcasecount = currentmonthcasecount + datay
-//} else if(currentmonthcheck == 0){
-//    currentmonthcheck = dataz[i][5] + dataz[i][6]
-//    
-//}else {
-//    if (currentyearcheck == 0){
-//        currentyearcheck = dataz[i][2] + dataz[i][3]
-//    }
-//    if (defusing == ""){
-//        defusing = currentmonthcheck + "-20" + currentyearcheck
-//    } else {
-//        defusing = defusing + "%22%2C%22" + currentmonthcheck + "-20" + currentyearcheck
-//    }
-// if (defusedcount == ""){
-//    defusedcount = currentmonthcasecount
-// }else{defusedcount = defusedcount + "%2C" + currentmonthcasecount }
-//    currentmonthcheck = dataz[i][5] + dataz[i][6]
-//    currentmonthcasecount = 0
+if (secretcheck != "Confirmed"){
+        setTimeout(function(){
+            NewMonthlyChart()
+}, 2000);
+    } else{
 
-//}
+for(let i=2; i < tests.length - 1; i++){
+    //cleaning variables
+    negativecheck = ""
+    datadate = ""
+    nextdate = ""
+    //Determining data dates
+    datadate = tests[i][2] + tests[i][3] + tests[i][4] + tests[i][5] + tests[i][6] + tests[i][7] + tests[i][8] 
+    nextdate = tests[i+1][2] + tests[i+1][3] + tests[i+1][4] + tests[i+1][5] + tests[i+1][6] + tests[i+1][7] + tests[i+1][8]
 
-//if ((dataz[i][2] + dataz[i][3]) == currentyearcheck){
-//} else {
-//    if (currentyearcheck == 0){
-//        currentyearcheck = dataz[i][2] + dataz[i][3]
-//    }
-//    currentyearcheck = dataz[i][2] + dataz[i][3]
-//}
+    //Determining if data is a positive test or negative test
+    if (tests[i][14] == ","){
+if (tests[i][15] == "n"){
+    negatives = negatives + parseInt(tests[i][13])
+    negativecheck = "Bad"
+}else {
+    positives = positives + parseInt(tests[i][13])
+}
+    }else {
+        if (tests[i][15] == ","){
+if (tests[i][16] == "n"){
+    negatives = negatives + parseInt(tests[i][13] + tests[i][14])
+    negativecheck = "Bad"
+}else {
+    positives = positives + parseInt(tests[i][13] + tests[i][14])
+}
+        }else {
+            if (tests[i][16] == ","){
+                if (tests[i][17] == "n"){
+                    negatives = negatives + parseInt(tests[i][13] + tests[i][14] + tests[i][15])
+                    negativecheck = "Bad"
+                }else{
+                    positives = positives + parseInt(tests[i][13] + tests[i][14] + tests[i][15]) 
+                }
+            }else {
+                if (tests[i][17] == ","){
+                    if (tests[i][18] == "n"){
+                        negatives = negatives + parseInt(tests[i][13] + tests[i][14] + tests[i][15] + tests[i][16])
+                        negativecheck = "Bad"
+                    }else {
+                        positives = positives + parseInt(tests[i][13] + tests[i][14] + tests[i][15] + tests[i][16])
+                    }
+                }else {
+                    if (tests[i][18] == ","){
+                        if (tests[i][19] == "n"){
+                            negatives = negatives + parseInt(tests[i][13] + tests[i][14] + tests[i][15] + tests[i][16] + tests[i][17])
+                            negativecheck = "Bad"
+                        }else {
+                            positives = positives + parseInt(tests[i][13] + tests[i][14] + tests[i][15] + tests[i][16] + tests[i][17])
+                        }
+                    } else{
+                    }
+                }
+            }
+        }
 
+    }
 
-//datacases = datacases + datax + "|"
+    //returning data
+if (datadate != nextdate){
 
-
-//if (i == dataz.length - 2){
-//    defusing = defusing + "%22%2C%22" + currentmonthcheck + "-20" + currentyearcheck
-//    defusedcount = defusedcount + "%2C" + currentmonthcasecount
-//}
-
-
-//}
-
-//chartapicall = "https://image-charts.com/chart.js/2.8.0?bkg=white&c=%7B%0A%20%20type%3A%20%27line%27%2C%0A%20%20data%3A%20%7B%0A%20%20%20%20labels%3A%20%5B%27"  + defusing  +  "%27%5D%2C%0A%20%20%20%20datasets%3A%20%5B%0A%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20label%3A%20%27My%20First%20dataset%27%2C%0A%20%20%20%20%20%20%20%20backgroundColor%3A%20%27rgb(255%2C%2099%2C%20132)%27%2C%0A%20%20%20%20%20%20%20%20borderColor%3A%20%27rgb(255%2C%2099%2C%20132)%27%2C%0A%20%20%20%20%20%20%20%20data%3A%20%5B" + defusedcount +  "%5D%2C%0A%20%20%20%20%20%20%20%20fill%3A%20false%2C%0A%20%20%20%20%20%20%7D%2C%0A%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20label%3A%20%27My%20Second%20dataset%27%2C%0A%20%20%20%20%20%20%20%20fill%3A%20false%2C%0A%20%20%20%20%20%20%20%20backgroundColor%3A%20%27rgb(54%2C%20162%2C%20235)%27%2C%0A%20%20%20%20%20%20%20%20borderColor%3A%20%27rgb(54%2C%20162%2C%20235)%27%2C%0A%20%20%20%20%20%20%20%20data%3A%20%5B20%2C%2085%2C%20-79%2C%2093%2C%2027%2C%20-81%2C%20-22%5D%2C%0A%20%20%20%20%20%20%7D%2C%0A%20%20%20%20%5D%2C%0A%20%20%7D%2C%0A%20%20options%3A%20%7B%0A%20%20%20%20title%3A%20%7B%0A%20%20%20%20%20%20display%3A%20true%2C%0A%20%20%20%20%20%20text%3A%20%27Chart.js%20Line%20Chart%27%2C%0A%20%20%20%20%7D%2C%0A%20%20%7D%2C%0A%7D%0A"
-//$("#datainsert").html("<img src='" + chartapicall + "'>"); 
-
-//}
-
+    {
+    if (months1 == ""){
+        months1 = datadate
+    }else {
+        months1 = months1 + "%22%2C%0A%20%20%20%20%20%20%22" + datadate
+    }
+    if (monthlypositive1 == ""){
+        monthlypositive1 = positives
+    }else {
+        monthlypositive1 = monthlypositive1 + "%2C%0A%20%20%20%20%20%20%20%20%20%20" + positives
+    }
+    if (monthlynegative1 == ""){
+        monthlynegative1 = negatives
+    }else {
+        monthlynegative1 = monthlynegative1 + "%2C%0A%20%20%20%20%20%20%20%20%20%20" + negatives
+    }
+    if (monthlytotal1 == ""){
+        monthlytotal1 = (parseInt(positives) + parseInt(negatives))
+    }else {
+        monthlytotal1 = monthlytotal1 + "%2C%0A%20%20%20%20%20%20%20%20%20%20" + (parseInt(positives) + parseInt(negatives))
+    }
+}
+{
+    if (months2 == ""){
+        months2 = datadate
+    }else {
+        months2 = months2 + "%27%2C%20%27" + datadate
+    }
+    if (monthlypositive2 == ""){
+        monthlypositive2 = positives
+    }else {
+        monthlypositive2 = monthlypositive2 + "%2C%20" + positives
+    }
+}
+{
+    if (months3 == ""){
+        months3 = datadate
+    }else {
+        months3 = months3 + "%22%2C%0A%20%20%20%20%20%20%22" + datadate
+    }
+    if (monthlypositive3 == ""){
+        monthlypositive3 = positives
+    }else {
+        monthlypositive3 = monthlypositive3 + "%2C%0A%20%20%20%20%20%20%20%20%20%20" + positives
+    }
+    if (monthlynegative3 == ""){
+        monthlynegative3 = negatives
+    }else {
+        monthlynegative3 = monthlynegative3 + "%2C%0A%20%20%20%20%20%20%20%20%20%20" + negatives
+    }
+}
+    negatives = 0
+    positives = 0
+}
+}
+chartapicall = "https://image-charts.com/chart.js/2.8.0?bkg=white&c=%7B%0A%20%20%22type%22%3A%20%22bar%22%2C%0A%20%20%22data%22%3A%20%7B%0A%20%20%20%20%22labels%22%3A%20%5B%0A%20%20%20%20%20%20%22" + months1 + "s%22%0A%20%20%20%20%5D%2C%0A%20%20%20%20%22datasets%22%3A%20%5B%0A%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20%22type%22%3A%20%22line%22%2C%0A%20%20%20%20%20%20%20%20%22label%22%3A%20%22Total%20Tests%22%2C%0A%20%20%20%20%20%20%20%20%22borderColor%22%3A%20%22rgb%2854%2C%20162%2C%20235%29%22%2C%0A%20%20%20%20%20%20%20%20%22borderWidth%22%3A%202%2C%0A%20%20%20%20%20%20%20%20%22fill%22%3A%20false%2C%0A%20%20%20%20%20%20%20%20%22data%22%3A%20%5B%0A%20%20%20%20%20%20%20%20%20%20" + monthlytotal1 + "%0A%20%20%20%20%20%20%20%20%5D%0A%20%20%20%20%20%20%7D%2C%0A%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20%22type%22%3A%20%22bar%22%2C%0A%20%20%20%20%20%20%20%20%22label%22%3A%20%22Positive%20Tests%22%2C%0A%20%20%20%20%20%20%20%20%22backgroundColor%22%3A%20%22rgb%28255%2C%2099%2C%20132%29%22%2C%0A%20%20%20%20%20%20%20%20%22data%22%3A%20%5B%0A%20%20%20%20%20%20%20%20%20%20" + monthlypositive1 + "%0A%20%20%20%20%20%20%20%20%5D%2C%0A%20%20%20%20%20%20%20%20%22borderColor%22%3A%20%22white%22%2C%0A%20%20%20%20%20%20%20%20%22borderWidth%22%3A%202%0A%20%20%20%20%20%20%7D%2C%0A%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20%22type%22%3A%20%22bar%22%2C%0A%20%20%20%20%20%20%20%20%22label%22%3A%20%22Negative%20Tests%22%2C%0A%20%20%20%20%20%20%20%20%22backgroundColor%22%3A%20%22rgb%2875%2C%20192%2C%20192%29%22%2C%0A%20%20%20%20%20%20%20%20%22data%22%3A%20%5B%0A%20%20%20%20%20%20%20%20%20%20" + monthlynegative1 + "%0A%20%20%20%20%20%20%20%20%5D%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%5D%0A%20%20%7D%2C%0A%20%20%22options%22%3A%20%7B%0A%20%20%20%20%22responsive%22%3A%20true%2C%0A%20%20%20%20%22title%22%3A%20%7B%0A%20%20%20%20%20%20%22display%22%3A%20true%2C%0A%20%20%20%20%20%20%22text%22%3A%20%22Covid%20Testing%20Chart%22%0A%20%20%20%20%7D%2C%0A%20%20%20%20%22tooltips%22%3A%20%7B%0A%20%20%20%20%20%20%22mode%22%3A%20%22index%22%2C%0A%20%20%20%20%20%20%22intersect%22%3A%20true%0A%20%20%20%20%7D%0A%20%20%7D%0A%7D"
+chartapi2 = "https://image-charts.com/chart.js/2.8.0?bkg=white&c=%7B%0A%20%20type%3A%20%27line%27%2C%0A%20%20data%3A%20%7B%0A%20%20%20%20labels%3A%20%5B%27" + months2 + "%27%5D%2C%0A%20%20%20%20datasets%3A%20%5B%0A%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20label%3A%20%27Positive%20Tests%27%2C%0A%20%20%20%20%20%20%20%20backgroundColor%3A%20%27rgb%28255%2C%2099%2C%20132%29%27%2C%0A%20%20%20%20%20%20%20%20borderColor%3A%20%27rgb%28255%2C%2099%2C%20132%29%27%2C%0A%20%20%20%20%20%20%20%20data%3A%20%5B" + monthlypositive2 + "%5D%2C%0A%20%20%20%20%20%20%20%20fill%3A%20false%2C%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%5D%2C%0A%20%20%7D%2C%0A%20%20options%3A%20%7B%0A%20%20%20%20title%3A%20%7B%0A%20%20%20%20%20%20display%3A%20true%2C%0A%20%20%20%20%20%20text%3A%20%27Covid%20Positive%20Tests%27%2C%0A%20%20%20%20%7D%2C%0A%20%20%7D%2C%0A%7D%0A"
+chartapi3 = "https://image-charts.com/chart.js/2.8.0?bkg=white&c=%7B%0A%20%20%22type%22%3A%20%22bar%22%2C%0A%20%20%22data%22%3A%20%7B%0A%20%20%20%20%22labels%22%3A%20%5B%0A%20%20%20%20%20%20%22" + months3 + "%22%0A%20%20%20%20%5D%2C%0A%20%20%20%20%22datasets%22%3A%20%5B%0A%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20%22label%22%3A%20%22Positive%20Tests%22%2C%0A%20%20%20%20%20%20%20%20%22backgroundColor%22%3A%20%22rgba%28255%2C%2099%2C%20132%2C%200.5%29%22%2C%0A%20%20%20%20%20%20%20%20%22borderColor%22%3A%20%22rgb%28255%2C%2099%2C%20132%29%22%2C%0A%20%20%20%20%20%20%20%20%22borderWidth%22%3A%201%2C%0A%20%20%20%20%20%20%20%20%22data%22%3A%20%5B%0A%20%20%20%20%20%20%20%20%20%20" + monthlypositive3 + "%0A%20%20%20%20%20%20%20%20%5D%0A%20%20%20%20%20%20%7D%2C%0A%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20%22label%22%3A%20%22Negative%20Tests%22%2C%0A%20%20%20%20%20%20%20%20%22backgroundColor%22%3A%20%22rgba%2854%2C%20162%2C%20235%2C%200.5%29%22%2C%0A%20%20%20%20%20%20%20%20%22borderColor%22%3A%20%22rgb%2854%2C%20162%2C%20235%29%22%2C%0A%20%20%20%20%20%20%20%20%22borderWidth%22%3A%201%2C%0A%20%20%20%20%20%20%20%20%22data%22%3A%20%5B%0A%20%20%20%20%20%20%20%20%20%20" + monthlynegative3 + "%0A%20%20%20%20%20%20%20%20%5D%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%5D%0A%20%20%7D%2C%0A%20%20%22options%22%3A%20%7B%0A%20%20%20%20%22responsive%22%3A%20true%2C%0A%20%20%20%20%22legend%22%3A%20%7B%0A%20%20%20%20%20%20%22position%22%3A%20%22top%22%0A%20%20%20%20%7D%2C%0A%20%20%20%20%22title%22%3A%20%7B%0A%20%20%20%20%20%20%22display%22%3A%20true%2C%0A%20%20%20%20%20%20%22text%22%3A%20%22Positive%20VS%20Negative%20Tests%22%0A%20%20%20%20%7D%0A%20%20%7D%0A%7D"
+$("#datainsert").html("<img src='" + chartapicall + "'>" + "<br>" + "<img src='" + chartapi2 + "'>" + "<br>" + "<img src='" + chartapi3 + "'>" + "<br>");
+    }}
 
 $('#btn_load_test_data').click(function(){
     variablesanatize()
@@ -221,12 +309,12 @@ $('#btn_load_test_data').click(function(){
 
 })
 
-//$('#btn_load_Monthly_chart').click(function(){
-//    variablesanatize()
-//    $("#datainsert").html("")
-//    CSVDataLoader()
-//    ChartingTheMonthlyData()
-//})
+$('#btn_load_Monthly_chart').click(function(){
+    variablesanatize()
+    $("#datainsert").html("")
+    CSVDataLoader()
+    NewMonthlyChart()
+})
 
 </script>
 </html>
